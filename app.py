@@ -6,6 +6,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:postgres@localhos
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
+db.create_all()
+db.session.commit()
+
 from models import Result
 
 @app.route('/')
