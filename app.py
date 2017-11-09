@@ -14,14 +14,6 @@ def connect_db():
     conn = psycopg2.connect(database=dbname, user=user, password=password, host=host, port=port)
     print("Opened database successfully")
     cur = conn.cursor()
-    cur.execute("select exists(select * from information_schema.tables where table_name=%s)", ('SNP500',))
-
-    # if cur.fetchone()[0] is None:
-    #     print("Database is empty")
-    # else:
-    #     print("Database is not empty")
-    # conn.close()
-
     populateFromCSV(conn, 'snp500', 'data/snp500dump.csv')
     conn.close()
 
@@ -44,6 +36,7 @@ db = SQLAlchemy(app)
 app.debug = True
 connect_db()
 
+"""
 @app.route('/')
 def hello():
     return "Hello World! %s" % app.config['SQLALCHEMY_DATABASE_URI']
@@ -98,6 +91,6 @@ def bokeh():
     )
     return encode_utf8(html)
 
-
+"""
 if __name__ == '__main__':
     app.run()
