@@ -14,7 +14,7 @@ def connect_db():
     conn = psycopg2.connect(database=dbname, user=user, password=password, host=host, port=port)
     print("Opened database successfully")
     cur = conn.cursor()
-    #populateFromCSV(conn, 'snp500', 'data/snp500dump.csv')
+    populateFromCSV(conn, 'snp500', 'data/snp500dump.csv')
     conn.close()
 
 def populateFromCSV(conn, table_name, csv_file):
