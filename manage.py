@@ -3,6 +3,8 @@ from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 
 from app import app, db
+from models import Result
+from models import SNP500
 
 
 migrate = Migrate(app, db)

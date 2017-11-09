@@ -1,6 +1,33 @@
 import os
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
+import psycopg2
+import pandas as pd
+
+
+def connect_db(dbname):
+    conn = psycopg2.connect(database=dbname, user="postgres", password="postgres", host="127.0.0.1", port="5432")
+    print("Opened database successfully")
+    cur = conn.cursor()
+    cur.execute("select exists(select * from information_schema.tables where table_name=%s)", ('SNP500',))
+
+    # if cur.fetchone()[0] is None:
+    #     print("Database is empty")
+    # else:
+    #     print("Database is not empty")
+    # conn.close()
+
+    populateFromCSV(conn, 'snp500', 'data/snp500dump.csv')
+    conn.close()
+
+def populateFromCSV(conn, table_name, csv_file):
+    f = open(csv_file, 'r')
+    next(f)
+    #sql = "COPY {0} FROM '{1}' CSV;".format(table_name, f)
+    #cur.execute(sql) # commented out to replace with copy_from
+    conn.cursor().copy_from(f, table_name, columns=('date', 'sp500'), sep=',')
+    conn.commit()
+
 
 app = Flask(__name__)
 #app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:postgres@localhost/kbdbf"
@@ -10,6 +37,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 app.debug = True
+connect_db('kbdbf')
+
+
 
 @app.route('/')
 def hello():
@@ -29,33 +59,6 @@ from datetime import datetime, timedelta, date
 
 @app.route('/chart')
 def bokeh():
-
-    # # init a basic bar chart:
-    # # http://bokeh.pydata.org/en/latest/docs/user_guide/plotting.html#bars
-    # fig = figure(plot_width=600, plot_height=600)
-    # fig.vbar(
-    #     x=[1, 2, 3, 4],
-    #     width=0.5,
-    #     bottom=0,
-    #     top=[1.7, 2.2, 4.6, 3.9],
-    #     color='navy'
-    # )
-    #
-    # # grab the static resources
-    # js_resources = INLINE.render_js()
-    # css_resources = INLINE.render_css()
-    #
-    # # render template
-    # script, div = components(fig)
-    # html = render_template(
-    #     'chart.html',
-    #     plot_script=script,
-    #     plot_div=div,
-    #     js_resources=js_resources,
-    #     css_resources=css_resources,
-    # )
-    # return encode_utf8(html)
-
     start = '2000-01-01'
     # we are going to match results with the dates of two latest recessions:
     # March-November 2001 Recession and December 2007 - June 2009  Recession
@@ -91,6 +94,7 @@ def bokeh():
         css_resources=css_resources,
     )
     return encode_utf8(html)
+
 
 if __name__ == '__main__':
     app.run()
