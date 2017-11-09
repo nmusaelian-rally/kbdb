@@ -10,7 +10,8 @@ def connect_db():
     path = dburi.split('://')[1]
     user, password = path.split('@')[0].split(':')
     host, dbname = path.split('@')[1].split('/')
-    conn = psycopg2.connect(database=dbname, user=user, password=password, host=host)
+    host, port   = host.split(':')
+    conn = psycopg2.connect(database=dbname, user=user, password=password, host=host, port=port)
     print("Opened database successfully")
     cur = conn.cursor()
     cur.execute("select exists(select * from information_schema.tables where table_name=%s)", ('SNP500',))
