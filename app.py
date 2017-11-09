@@ -5,8 +5,12 @@ import psycopg2
 import pandas as pd
 
 
-def connect_db(dbname):
-    conn = psycopg2.connect(database=dbname, user="postgres", password="postgres", host="127.0.0.1", port="5432")
+def connect_db():
+    dburi = os.environ['DATABASE_URL']
+    path = dburi.split('://')[1]
+    user, password = path.split('@')[0].split(':')
+    host, dbname = path.split('@')[1].split('/')
+    conn = psycopg2.connect(database=dbname, user=user, password=password, host=host)
     print("Opened database successfully")
     cur = conn.cursor()
     cur.execute("select exists(select * from information_schema.tables where table_name=%s)", ('SNP500',))
@@ -37,9 +41,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 app.debug = True
-connect_db('kbdbf')
-
-
+connect_db()
 
 @app.route('/')
 def hello():

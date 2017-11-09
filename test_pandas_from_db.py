@@ -5,11 +5,14 @@ from datetime import datetime
 import pandas_datareader.data as web
 import sqlalchemy
 
-def connect(dbname):
-    conn = psycopg2.connect(database=dbname, user="postgres", password="postgres", host="127.0.0.1", port="5432")
+def connect():
+    dburi = os.environ['DATABASE_URL']
+    path = dburi.split('://')[1]
+    user, password = path.split('@')[0].split(':')
+    host, dbname = path.split('@')[1].split('/')
+    conn = psycopg2.connect(database=dbname, user=user, password=password, host=host)
     print("Opened database successfully")
     return conn
-
 
 def disconnect(conn):
     print("Closing database connection")
@@ -18,12 +21,6 @@ def disconnect(conn):
 def readSQL(table_name, conn):
     sql = 'select * from %s' %table_name
     df = pd.read_sql(sql, con=conn)
-
-    # do this incrementally in chunks?
-    #df = pd.DataFrame()
-    #for chunk in pd.read_sql('select * from table_name', con=conn, chunksize=5000):
-        #df = df.append(chunk)
-
     return df
 
 def getCurrentData(start):
@@ -40,7 +37,7 @@ def appendTable(df, table_name):
     engine = sqlalchemy.create_engine(os.environ['DATABASE_URL'])
     df.to_sql(table_name, engine, index=False, if_exists='append')
 
-conn = connect('kbdbf')
+conn = connect()
 df = readSQL('snp500', conn)
 disconnect(conn)
 print(df.head(1))
