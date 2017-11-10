@@ -13,6 +13,7 @@ import pandas_datareader.data as web
 from datetime import datetime
 
 from append_table import update
+from lows import getLows
 
 
 app = Flask(__name__)
@@ -52,6 +53,8 @@ def buildSP500Chart():
     update()
     conn = connect()
     sp = readSQL('snp500', conn)
+    threshold = 14
+    bad = getLows(sp, threshold=threshold)
     disconnect(conn)
 
     ds = ColumnDataSource(sp)
@@ -86,6 +89,7 @@ def buildSP500Chart():
     script, div = components(fig)
     html = render_template(
         'sp.html',
+        data = bad,
         plot_script=script,
         plot_div=div,
         js_resources=js_resources,

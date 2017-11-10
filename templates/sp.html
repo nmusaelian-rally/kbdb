@@ -10,5 +10,8 @@
   </head>
   <body>
     {{ plot_div|indent(4)|safe }}
+    {% block content %}
+    {{data | safe}}
+    {% endblock %}
   </body>
 </html>
