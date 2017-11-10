@@ -38,22 +38,22 @@ def appendTable(df, table_name):
     engine = sqlalchemy.create_engine(os.environ['DATABASE_URL'])
     df.to_sql(table_name, engine, index=False, if_exists='append')
 
-conn, last_date = connect()
-disconnect(conn)
+def update():
+    conn, last_date = connect()
+    disconnect(conn)
 
-today = datetime.today().strftime('%Y-%m-%d')
-if str(last_date).split()[0] != today:
-    next_date = last_date + pd.DateOffset(days=1)
-    next_date_str = str(next_date).split()[0]
-    print("--------")
-    print (next_date_str)
-    current = getCurrentData(next_date_str)
-    if not current.empty:
-        print(current.head(1))
-        print(current.tail(1))
-        appendTable(current, 'snp500')
+    today = datetime.today().strftime('%Y-%m-%d')
+    if str(last_date).split()[0] != today:
+        next_date = last_date + pd.DateOffset(days=1)
+        next_date_str = str(next_date).split()[0]
+        print("--------")
+        print(next_date_str)
+        current = getCurrentData(next_date_str)
+        if not current.empty:
+            print(current.head(1))
+            print(current.tail(1))
+            appendTable(current, 'snp500')
+        else:
+            print("Nothing to append")
     else:
-        print("Nothing to append")
-else:
-    print("A row for %s already exist" % str(last_date))
-
+        print("A row for %s already exist" % str(last_date))

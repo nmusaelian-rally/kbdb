@@ -12,6 +12,8 @@ import pandas as pd
 import pandas_datareader.data as web
 from datetime import datetime
 
+from append_table import update
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
@@ -47,6 +49,7 @@ def buildSP500Chart():
         df = pd.read_sql(sql, con=conn)
         return df
 
+    update()
     conn = connect()
     sp = readSQL('snp500', conn)
     disconnect(conn)
