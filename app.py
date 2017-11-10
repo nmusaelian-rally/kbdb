@@ -25,8 +25,73 @@ app.debug = True
 def hello():
     return "Hello World!"
 
-@app.route('/t-yield-delta')
-def buildChart():
+
+@app.route('/sp')
+def buildSP500Chart():
+    def connect():
+        dburi = os.environ['DATABASE_URL']
+        path = dburi.split('://')[1]
+        user, password = path.split('@')[0].split(':')
+        host, dbname = path.split('@')[1].split('/')
+        host, port = host.split(':')
+        conn = psycopg2.connect(database=dbname, user=user, password=password, host=host, port=port)
+        print("Opened database successfully")
+        return conn
+
+    def disconnect(conn):
+        print("Closing database connection")
+        conn.close()
+
+    def readSQL(table_name, conn):
+        sql = 'select * from %s' %table_name
+        df = pd.read_sql(sql, con=conn)
+        return df
+
+    conn = connect()
+    sp = readSQL('snp500', conn)
+    disconnect(conn)
+
+    ds = ColumnDataSource(sp)
+
+    start = '2007-09-28'
+    today = datetime.today().strftime('%Y-%m-%d')
+    recessions = web.DataReader('USRECM', "fred", start, today)
+
+    ds2 = ColumnDataSource(recessions)
+
+    title = "SP500"
+    fig = figure(plot_width   = 800,
+                 plot_height  = 600,
+                 x_axis_label = "Date",
+                 y_axis_label = "SP500",
+                 x_axis_type  = "datetime",
+                 title = title)
+    fig.xaxis[0].ticker.desired_num_ticks = 10
+    fig.add_tools(HoverTool(tooltips=[("date", "@x{%F}"),("sp500", "@y{0.00}")],
+                            formatters={"x": "datetime"}, names=['sp']))
+    fig.add_tools(HoverTool(tooltips=[("DATE", "@x{%F}")],
+                            formatters={"x": "datetime"}, names=['recession-dates']))
+    fig.line(ds.data['date'],ds.data['sp500'], line_color="green", legend="sp500", name='sp')
+    fig.line(ds2.data['DATE'], ds2.data['USRECM']*1000,  line_color="red",   legend="recession", name='recession-dates')
+    fig.legend.location = "top_left"
+
+    # grab the static resources
+    js_resources = INLINE.render_js()
+    css_resources = INLINE.render_css()
+
+    # render template
+    script, div = components(fig)
+    html = render_template(
+        'sp.html',
+        plot_script=script,
+        plot_div=div,
+        js_resources=js_resources,
+        css_resources=css_resources,
+    )
+    return encode_utf8(html)
+
+@app.route('/yield')
+def buildYieldChart():
     start = '2000-01-01'
     # match results with the dates of two latest recessions:
     # March-November 2001 Recession and December 2007 - June 2009  Recession
