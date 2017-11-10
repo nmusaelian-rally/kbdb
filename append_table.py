@@ -13,16 +13,16 @@ def connect():
     host, port = host.split(':')
     conn = psycopg2.connect(database=dbname, user=user, password=password, host=host, port=port)
     print("Opened database successfully")
-    return conn
+    sql = "SELECT date from snp500 order by id desc limit 1;"
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    last_date = cursor.fetchone()[0]
+    return conn, last_date
 
 def disconnect(conn):
     print("Closing database connection")
     conn.close()
 
-def readSQL(table_name, conn):
-    sql = 'select * from %s' %table_name
-    df = pd.read_sql(sql, con=conn)
-    return df
 
 def getCurrentData(start):
     today = datetime.today().strftime('%Y-%m-%d')
@@ -38,13 +38,9 @@ def appendTable(df, table_name):
     engine = sqlalchemy.create_engine(os.environ['DATABASE_URL'])
     df.to_sql(table_name, engine, index=False, if_exists='append')
 
-conn = connect()
-df = readSQL('snp500', conn)
+conn, last_date = connect()
 disconnect(conn)
-print(df.head(1))
-print(df.tail(1))
 
-last_date = df['date'].iloc[-1]
 today = datetime.today().strftime('%Y-%m-%d')
 if str(last_date).split()[0] != today:
     next_date = last_date + pd.DateOffset(days=1)
@@ -52,9 +48,12 @@ if str(last_date).split()[0] != today:
     print("--------")
     print (next_date_str)
     current = getCurrentData(next_date_str)
-    print(current.head(1))
-    print(current.tail(1))
-    appendTable(current, 'snp500')
+    if not current.empty:
+        print(current.head(1))
+        print(current.tail(1))
+        appendTable(current, 'snp500')
+    else:
+        print("Nothing to append")
 else:
     print("A row for %s already exist" % str(last_date))
 

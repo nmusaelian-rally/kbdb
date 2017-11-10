@@ -24,9 +24,9 @@ def hello():
 @app.route('/t-yield-delta')
 def buildChart():
     start = '2000-01-01'
-    # we are going to match results with the dates of two latest recessions:
+    # match results with the dates of two latest recessions:
     # March-November 2001 Recession and December 2007 - June 2009  Recession
-    # so January of 2000 seems like a good date to start
+    # January of 2000 seems like a good date to start
 
     today = datetime.today().strftime('%Y-%m-%d')
     t_yields = web.DataReader(['GS3M', 'GS10'], "fred", start, today)
