@@ -85,7 +85,7 @@ def buildSP500Chart():
 
     script, div = components(fig)
 
-    lows_html = lows.to_html(classes=["table table-bordered", "table table-striped"])
+    lows_html = lows.to_html(classes=["table table-bordered", "table table-striped", "table table-nonfluid"])
 
     html = render_template(
         'sp.html',

@@ -8,27 +8,45 @@
     {{ js_resources|indent(4)|safe }}
     {{ css_resources|indent(4)|safe }}
     {{ plot_script|indent(4)|safe }}
+    <style>
+      /* to avoid 100% default width of table's container */
+      .table-nonfluid {
+        width: auto !important;
+      }
+      .container-small, .container-large {
+        max-width: 100%;
+      }
+    </style>
   </head>
   <body>
-    {{ plot_div|indent(4)|safe }}
-    <div class="container">
-      Last record:
-    {% if 'peak' in last_record %}
-      <p class="bg-success">This is a new peak!</p>
-    {% elif 'alert' in last_record %}
-      <p class="bg-danger">Down more than 10% !</p>
-    {% else %}
-      <p class="bg-warning">
-      <br>  Date: {{ last_record['date'] | stringifier }}
-      <br>  Value: {{ last_record['value'] }}
-      <br>  Down from last peak of {{ last_record['last peak'] }}: {{ last_record['% down from peak'] }}%
-      </p>
-    {% endif %}
-    </div>
-    <div class="container">
-    Past data:
-    <p>There have been {{ length }} days since {{ start }} when S&P500 value dropped below 10% of its last peak</p>
-      {{data | safe}}
-    </div>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-8 col-sm-push-4">
+          {{ plot_div|indent(4)|safe }}
+          <div class="container-small">
+          Last record:
+          {% if 'peak' in last_record %}
+            <p class="bg-success w-25 p-3">This is a new peak!</p>
+          {% elif 'alert' in last_record %}
+            <p class="bg-danger w-25 p-3">Down more than 10% !</p>
+          {% else %}
+            <p class="bg-warning w-25 p-3">
+              <br>  Date: {{ last_record['date'] | stringifier }}
+              <br>  Value: {{ last_record['value'] }}
+              <br>  Down from last peak of {{ last_record['last peak'] }}: {{ last_record['% down from peak'] }}%
+            </p>
+          {% endif %}
+            </div>
+        </div>
+        <div class="col-sm-4 col-sm-pull-8">
+          <h5>Past data:</h5>
+            <p>There have been {{ length }} days since {{ start }} when S&P500 value dropped below 10% of its last peak</p>
+            {{data | safe}}
+          </div>
+        </div>
+
+      </div>
+
+
   </body>
 </html>

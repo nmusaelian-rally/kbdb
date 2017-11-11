@@ -24,7 +24,7 @@ def getLows(df, threshold=DEFAULT_THRESHOLD):
                 last_record['% down from peak'] = round(pc_down,2)
                 last_record['last peak'] = peak
             if pc_down > threshold:
-                lows.append({'date': date, 'value': round(current, 2),  '% down': round(pc_down,2), 'from peak': peak})
+                lows.append({'date': date, 'value': round(current, 2),  '% down': round(pc_down, 2), 'from peak': peak})
                 if last_row:
                     last_record['alert'] = True
 
