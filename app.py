@@ -14,6 +14,7 @@ from datetime import datetime
 
 from append_table import update
 from lows import getLows
+from scenarios import timing
 
 
 app = Flask(__name__)
@@ -153,6 +154,17 @@ def buildYieldChart():
         plot_div=div,
         js_resources=js_resources,
         css_resources=css_resources,
+    )
+    return encode_utf8(html)
+
+@app.route('/scenarios')
+def buildTimingScenarios():
+    df = pd.read_csv('data/timing.csv', index_col=0)
+    tdf = timing(df)
+    tdf_html = tdf.to_html(classes=["table table-bordered", "table table-striped", "table table-nonfluid"])
+    html = render_template(
+        'scenarios.html',
+        data=tdf_html
     )
     return encode_utf8(html)
 

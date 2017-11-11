@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <title>Scenarios</title>
+    <style>
+      /* to avoid 100% default width of table's container */
+      .table-nonfluid {
+        width: auto !important;
+      }
+      .container-small, .container-large {
+        max-width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-2">
+          <img src="{{url_for('static', filename='img/fernandel2.jpg')}}" />
+        </div>
+        <div class="col-sm-10">
+          <h3>Rewind to start of 2007 with $10,000 in LargCap S&P500 index fund</h3>
+          <p>Actual end of year gains and losses of a LargeCap index fund (S&P500 benchmark) and a Bond index fund (Benchmark BBgBarc US TIPS)<br />
+          were used to calculate 4 hypothetical sceanrios</p>
+          <div class="list-group">
+          <h4 class="list-group-item-heading">HoldStocks</h4>
+          <p class="list-group-item-text">keep invested in LargeCap index fund from 2007 to 2016</p>
+          <h4 class="list-group-item-heading">HoldBonds</h4>
+          <p class="list-group-item-text">switch to bond fund after suffering 10% losses in stocks in 2008, stay invested in bonds from 2008 to 2016</p>
+          <h4 class="list-group-item-heading">MarketTiming</h4>
+          <p class="list-group-item-text">swithch to bond fund after suffering 20% losses in stocks in 2008,miss 2009 stock rally by continuing to hold bonds in 2009,<br />
+          switch back from bond fund to LargeCap index fund in the end of 2009,stay invested in stocks from 2010 to 2016</p>
+          <h4 class="list-group-item-heading">BetterMarketTiming</h4>
+          <p class="list-group-item-text">swithch to bond fund after suffering 10% losses in stocks in 2008,switch back from bond fund to LargeCap index fund in the end of 2008,<br />
+          stay invested in stocks from 2009 to 2016</p>
+          </div>
+        </div>
+      </div>
+    <div class="container">
+
+
+</div>
+    <div class="container">
+      {{data | safe}}
+    </div>
+  </body>
+</html>
