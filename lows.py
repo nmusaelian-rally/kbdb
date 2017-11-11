@@ -1,26 +1,34 @@
 import pandas as pd
 
-#snp500dump = pd.read_csv('data/snp500dump.csv')
-#print (snp500dump.shape[0])
+DEFAULT_THRESHOLD = 10
 
-DEFAULT_THRESHOLD = 15
-
-def getLows(d, threshold=DEFAULT_THRESHOLD):
+def getLows(df, threshold=DEFAULT_THRESHOLD):
     lows = []
-    peak = d.iloc[0]['sp500']
-    for i in range(0, len(d)):
-        date    = d.iloc[i]['date']
-        current = d.iloc[i]['sp500']
+    peak = df.iloc[0]['sp500']
+    length = df.shape[0]
+    last_row    = False
+    last_record = {}
+    for i in range(0, length):
+        date    = df.iloc[i]['date']
+        current = df.iloc[i]['sp500']
+        if i == length - 1:
+            last_row = True
+            last_record = {'value':current, 'date':date}
         if current >= peak:
             peak = current
+            if last_row:
+                last_record['peak'] = True
         else:
             pc_down = 100 - ((current / peak) * 100)
+            if last_row:
+                last_record['% down from peak'] = round(pc_down,2)
+                last_record['last peak'] = peak
             if pc_down > threshold:
-                lows.append({'date': date, 'value': round(current, 2),  'pcdown': round(pc_down,2), 'from': peak})
+                lows.append({'date': date, 'value': round(current, 2),  '% down': round(pc_down,2), 'from peak': peak})
+                if last_row:
+                    last_record['alert'] = True
 
-    bad = pd.DataFrame(lows)
-    return bad
-
-# threshold = 14.00
-# bad = getLows(snp500dump, threshold)
-# print (bad)
+    lows_df = pd.DataFrame(lows)
+    lows_df.set_index('date', inplace=True)
+    lows_df = lows_df.iloc[::-1]
+    return lows_df, last_record

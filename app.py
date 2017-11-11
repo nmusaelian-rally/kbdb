@@ -25,8 +25,8 @@ app.debug = True
 
 
 @app.route('/')
-def hello():
-    return "Hello World!"
+def index():
+    return render_template('index.html')
 
 
 @app.route('/sp')
@@ -53,8 +53,7 @@ def buildSP500Chart():
     update()
     conn = connect()
     sp = readSQL('snp500', conn)
-    threshold = 14
-    bad = getLows(sp, threshold=threshold)
+    lows, last_record = getLows(sp)
     disconnect(conn)
 
     ds = ColumnDataSource(sp)
@@ -81,21 +80,31 @@ def buildSP500Chart():
     fig.line(ds2.data['DATE'], ds2.data['USRECM']*1000,  line_color="red",   legend="recession", name='recession-dates')
     fig.legend.location = "top_left"
 
-    # grab the static resources
     js_resources = INLINE.render_js()
     css_resources = INLINE.render_css()
 
-    # render template
     script, div = components(fig)
+
+    lows_html = lows.to_html(classes=["table table-bordered", "table table-striped"])
+
     html = render_template(
         'sp.html',
-        data = bad,
+        data = lows_html,
+        length = lows.shape[0],
+        start  = start,
+        last_record = last_record,
         plot_script=script,
         plot_div=div,
         js_resources=js_resources,
         css_resources=css_resources,
     )
     return encode_utf8(html)
+
+@app.template_filter()
+def stringifier(value):
+    return str(value).split()[0]
+
+app.jinja_env.filters['stringifier'] = stringifier
 
 @app.route('/yield')
 def buildYieldChart():
@@ -112,7 +121,6 @@ def buildYieldChart():
     t_yields.rename(columns=name_map, inplace=True)
     for index, row in t_yields.iterrows():
         t_yields.loc[index, 'Difference'] = t_yields.loc[index, '10YearRate'] - t_yields.loc[index, '3MonthRate']
-
 
     ds = ColumnDataSource(t_yields)
 
@@ -135,12 +143,9 @@ def buildYieldChart():
     fig.line(ds.data['DATE'],ds.data['Difference'], line_color="green", legend="delta", name='rate-delta')
     fig.line(ds2.data['DATE'], ds2.data['USRECM'],  line_color="red",   legend="recession", name='recession-dates')
 
-
-    # grab the static resources
     js_resources = INLINE.render_js()
     css_resources = INLINE.render_css()
 
-    # render template
     script, div = components(fig)
     html = render_template(
         'yield.html',
@@ -150,7 +155,6 @@ def buildYieldChart():
         css_resources=css_resources,
     )
     return encode_utf8(html)
-
 
 if __name__ == '__main__':
     app.run()

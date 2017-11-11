@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <title>SP500</title>
     {{ js_resources|indent(4)|safe }}
     {{ css_resources|indent(4)|safe }}
@@ -10,8 +11,24 @@
   </head>
   <body>
     {{ plot_div|indent(4)|safe }}
-    {% block content %}
-    {{data | safe}}
-    {% endblock %}
+    <div class="container">
+      Last record:
+    {% if 'peak' in last_record %}
+      <p class="bg-success">This is a new peak!</p>
+    {% elif 'alert' in last_record %}
+      <p class="bg-danger">Down more than 10% !</p>
+    {% else %}
+      <p class="bg-warning">
+      <br>  Date: {{ last_record['date'] | stringifier }}
+      <br>  Value: {{ last_record['value'] }}
+      <br>  Down from last peak of {{ last_record['last peak'] }}: {{ last_record['% down from peak'] }}%
+      </p>
+    {% endif %}
+    </div>
+    <div class="container">
+    Past data:
+    <p>There have been {{ length }} days since {{ start }} when S&P500 value dropped below 10% of its last peak</p>
+      {{data | safe}}
+    </div>
   </body>
 </html>

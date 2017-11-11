@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <title>Market Timing</title>
+    <style>
+      body {
+        background-image: url('static/img/fernandel.jpg');
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-position: center;
+      }
+      /* to control  width of ul */
+      .list-group{
+        display:inline-block;
+      }
+    </style>
+  </head>
+  <!--body background="{{ url_for('static', filename='img/fernandel.jpg') }}"-->
+  <body>
+    <div class="container">
+        <div class="list-group">
+          <a href="sp"    class="list-group-item list-group-item-action">S&P500</a>
+          <a href="yield" class="list-group-item list-group-item-action">T Yields</a>
+        </div>
+    </div>
+  </body>
+</html>
