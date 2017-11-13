@@ -24,18 +24,19 @@
         <div class="col-sm-8 col-sm-push-4">
           {{ plot_div|indent(4)|safe }}
           <div class="container-small">
-          Last record:
-          {% if 'peak' in last_record %}
-            <p class="bg-success w-25 p-3">This is a new peak!</p>
-          {% elif 'alert' in last_record %}
-            <p class="bg-danger w-25 p-3">Down more than 10% !</p>
-          {% else %}
-            <p class="bg-warning w-25 p-3">
-              <br>  Date: {{ last_record['date'] | stringifier }}
-              <br>  Value: {{ last_record['value'] }}
-              <br>  Down from last peak of {{ last_record['last peak'] }}: {{ last_record['% down from peak'] }}%
-            </p>
-          {% endif %}
+            Last record:
+            {% if 'peak' in last_record %}
+              <p class="bg-success w-25 p-3">This is a new peak!</p>
+            {% elif '% down from peak' in last_record %}
+              <p class="bg-warning w-25 p-3">
+                Down {{ last_record['% down from peak'] }}% from last peak of {{ last_record['last peak'] }}
+              </p>
+            {% endif %}
+            <br>  Date: {{ last_record['date'] | stringifier }}
+            <br>  Value: {{ last_record['value'] }}
+            {% if 'alert' in last_record %}
+              <p class="bg-danger w-25 p-3">alert!</p>
+            {% endif %}
             </div>
         </div>
         <div class="col-sm-4 col-sm-pull-8">
