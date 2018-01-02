@@ -32,6 +32,7 @@ def index():
 
 @app.route('/sp')
 def buildSP500Chart():
+    table_name = 'snp500'
     def connect():
         dburi = os.environ['DATABASE_URL']
         path = dburi.split('://')[1]
@@ -46,14 +47,14 @@ def buildSP500Chart():
         print("Closing database connection")
         conn.close()
 
-    def readSQL(table_name, conn):
-        sql = 'select * from %s' %table_name
+    def readSQL(tbl, conn):
+        sql = 'select * from %s' %tbl
         df = pd.read_sql(sql, con=conn)
         return df
 
-    update()
+    update(table_name)  #update()
     conn = connect()
-    sp = readSQL('snp500', conn)
+    sp = readSQL(table_name, conn)
     lows, last_record = getLows(sp)
     disconnect(conn)
 
