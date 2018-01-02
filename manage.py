@@ -3,8 +3,7 @@ from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 
 from app import app, db
-from models import Result
-from models import SNP500
+from models import SNP500, Burst, Bitcoin, Litecoin, Nexus
 
 
 migrate = Migrate(app, db)
