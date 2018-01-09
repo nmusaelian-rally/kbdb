@@ -15,7 +15,7 @@ from datetime import datetime
 from append_table import update
 from lows import getLows
 from scenarios import timing
-
+from read_coins import coins, getInitialOneYearDataDump
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
@@ -30,29 +30,49 @@ def index():
     return render_template('index.html')
 
 
+def connect():
+    dburi = os.environ['DATABASE_URL']
+    path = dburi.split('://')[1]
+    user, password = path.split('@')[0].split(':')
+    host, dbname = path.split('@')[1].split('/')
+    host, port = host.split(':')
+    conn = psycopg2.connect(database=dbname, user=user, password=password, host=host, port=port)
+    print("Opened database successfully")
+    return conn
+
+def readSQL(tbl, conn):
+    sql = 'select * from %s' % tbl
+    df = pd.read_sql(sql, con=conn)
+    return df
+
+
+def disconnect(conn):
+    print("Closing database connection")
+    conn.close()
+
 @app.route('/sp')
 def buildSP500Chart():
     table_name = 'snp500'
-    def connect():
-        dburi = os.environ['DATABASE_URL']
-        path = dburi.split('://')[1]
-        user, password = path.split('@')[0].split(':')
-        host, dbname = path.split('@')[1].split('/')
-        host, port = host.split(':')
-        conn = psycopg2.connect(database=dbname, user=user, password=password, host=host, port=port)
-        print("Opened database successfully")
-        return conn
+    # def connect():
+    #     dburi = os.environ['DATABASE_URL']
+    #     path = dburi.split('://')[1]
+    #     user, password = path.split('@')[0].split(':')
+    #     host, dbname = path.split('@')[1].split('/')
+    #     host, port = host.split(':')
+    #     conn = psycopg2.connect(database=dbname, user=user, password=password, host=host, port=port)
+    #     print("Opened database successfully")
+    #     return conn
+    #
+    # def disconnect(conn):
+    #     print("Closing database connection")
+    #     conn.close()
 
-    def disconnect(conn):
-        print("Closing database connection")
-        conn.close()
+    # def readSQL(tbl, conn):
+    #     sql = 'select * from %s' %tbl
+    #     df = pd.read_sql(sql, con=conn)
+    #     return df
 
-    def readSQL(tbl, conn):
-        sql = 'select * from %s' %tbl
-        df = pd.read_sql(sql, con=conn)
-        return df
-
-    update(table_name)  #update()
+    update(table_name)
     conn = connect()
     sp = readSQL(table_name, conn)
     lows, last_record = getLows(sp)
@@ -168,6 +188,22 @@ def buildTimingScenarios():
         data=tdf_html
     )
     return encode_utf8(html)
+
+@app.route('/coins')
+def buildCoinData():
+    #------initial data dump is done once------
+    #for coin in coins:
+        #getInitialOneYearDataDump(coin)
+    #-------------------------------------------
+
+    '''
+    sqlalchemy.exc.ProgrammingError: (psycopg2.ProgrammingError) column "index" of relation "burst" does not exist
+    LINE 1: INSERT INTO burst (index, date, open, high, low, close, volu...
+    '''
+    for coin in coins:
+         update(coin)
+    return render_template('coins.html')
+
 
 if __name__ == '__main__':
     app.run()

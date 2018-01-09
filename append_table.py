@@ -5,6 +5,7 @@ from datetime import datetime
 import pandas_datareader.data as web
 import sqlalchemy
 
+from read_coins import coins, getCurrentCoinData
 
 def connect(table_name):
     dburi = os.environ['DATABASE_URL']
@@ -32,6 +33,9 @@ def getCurrentData(table_name, start):
 
     if table_name == 'snp500':
         df = web.DataReader('SP500', "fred", start, end)
+
+    elif table_name in coins:
+        df = getCurrentCoinData(table_name, start, end)
 
     df.dropna(inplace=True)
     df.reset_index(inplace=True)
