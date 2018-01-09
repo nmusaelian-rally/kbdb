@@ -1,8 +1,6 @@
 import pandas as pd
 
-#coins = ['burst','bitcoin','litecoin','nexus']
-#coins = ['burst']
-coins = ['bitcoin','litecoin','nexus']
+coins = ['burst','bitcoin','litecoin','nexus']
 
 def getInitialOneYearDataDump(coin):
     '''

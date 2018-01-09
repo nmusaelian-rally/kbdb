@@ -196,12 +196,9 @@ def buildCoinData():
         #getInitialOneYearDataDump(coin)
     #-------------------------------------------
 
-    '''
-    sqlalchemy.exc.ProgrammingError: (psycopg2.ProgrammingError) column "index" of relation "burst" does not exist
-    LINE 1: INSERT INTO burst (index, date, open, high, low, close, volu...
-    '''
     for coin in coins:
-         update(coin)
+          update(coin)
+
     return render_template('coins.html')
 
 
