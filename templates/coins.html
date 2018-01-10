@@ -35,17 +35,17 @@
             <div class="col-sm-4">
               {% for c in current %}
                 <div class="detail-spacer">
-                    <h5>{{ c[0]['name'] | safe }}</h5>
+                    <h5>{{ c[0]['symbol'] | safe }}</h5>
                     Price USD: $ {{ c[0]['price_usd'] | safe }}               <br />
                     {% if c[0]['name'] != "Bitcoin" %}
                     Price BTC:   {{ c[0]['price_btc'] | safe }}               <br />
                     {% endif %}
-                    24 H  Change: {{ c[0]['percent_change_24h'] | safe }} %   <br />
-                    7 D   Change: {{ c[0]['percent_change_7d'] | safe }}  %   <br />
+                    24 H  Change: {{ c[0]['percent_change_24h'] | safe }}%   <br />
+                    7 D   Change: {{ c[0]['percent_change_7d'] | safe }}%    <br />
                     Max Supply:  {{ c[0]['max_supply'] | safe }}              <br />
                     Available Supply: {{ c[0]['available_supply'] | safe }}   <br />
-                    24 h volume $: {{ c[0]['24h_volume_usd'] | safe }}        <br />
-                    Market Cap $:  {{ c[0]['market_cap_usd'] | safe }}        <br />
+                    24 h volume: ${{ c[0]['24h_volume_usd'] | safe }}        <br />
+                    Market Cap:  ${{ c[0]['market_cap_usd'] | safe }}        <br />
                 </div>
               {% endfor %}
             </div>
