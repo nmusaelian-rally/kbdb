@@ -5,7 +5,9 @@ from datetime import datetime
 import pandas_datareader.data as web
 import sqlalchemy
 
-def connect():
+from read_coins import coins, getCurrentCoinData
+
+def connect(table_name):
     dburi = os.environ['DATABASE_URL']
     path = dburi.split('://')[1]
     user, password = path.split('@')[0].split(':')
@@ -13,7 +15,7 @@ def connect():
     host, port = host.split(':')
     conn = psycopg2.connect(database=dbname, user=user, password=password, host=host, port=port)
     print("Opened database successfully")
-    sql = "SELECT date from snp500 order by id desc limit 1;"
+    sql = "SELECT date from %s order by id desc limit 1;" % table_name
     cursor = conn.cursor()
     cursor.execute(sql)
     last_date = cursor.fetchone()[0]
@@ -24,22 +26,28 @@ def disconnect(conn):
     conn.close()
 
 
-def getCurrentData(start):
+def getCurrentData(table_name, start):
+    df = None
     today = datetime.today().strftime('%Y-%m-%d')
     end   = today
 
-    snp500 = web.DataReader('SP500', "fred", start, end)
-    snp500.dropna(inplace=True)
-    snp500.reset_index(inplace=True)
-    snp500.columns = [c.lower() for c in snp500.columns]
-    return snp500
+    if table_name == 'snp500':
+        df = web.DataReader('SP500', "fred", start, end)
+
+    elif table_name in coins:
+        df = getCurrentCoinData(table_name, start, end)
+
+    df.dropna(inplace=True)
+    df.reset_index(inplace=True)
+    df.columns = [c.lower() for c in df.columns]
+    return df
 
 def appendTable(df, table_name):
     engine = sqlalchemy.create_engine(os.environ['DATABASE_URL'])
     df.to_sql(table_name, engine, index=False, if_exists='append')
 
-def update():
-    conn, last_date = connect()
+def update(table_name):
+    conn, last_date = connect(table_name)
     disconnect(conn)
 
     today = datetime.today().strftime('%Y-%m-%d')
@@ -48,11 +56,11 @@ def update():
         next_date_str = str(next_date).split()[0]
         print("--------")
         print(next_date_str)
-        current = getCurrentData(next_date_str)
+        current = getCurrentData(table_name,next_date_str)
         if not current.empty:
             print(current.head(1))
             print(current.tail(1))
-            appendTable(current, 'snp500')
+            appendTable(current, table_name)
         else:
             print("Nothing to append")
     else:
