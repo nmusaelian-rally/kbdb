@@ -55,24 +55,6 @@ def disconnect(conn):
 @app.route('/sp')
 def buildSP500Chart():
     table_name = 'snp500'
-    # def connect():
-    #     dburi = os.environ['DATABASE_URL']
-    #     path = dburi.split('://')[1]
-    #     user, password = path.split('@')[0].split(':')
-    #     host, dbname = path.split('@')[1].split('/')
-    #     host, port = host.split(':')
-    #     conn = psycopg2.connect(database=dbname, user=user, password=password, host=host, port=port)
-    #     print("Opened database successfully")
-    #     return conn
-    #
-    # def disconnect(conn):
-    #     print("Closing database connection")
-    #     conn.close()
-
-    # def readSQL(tbl, conn):
-    #     sql = 'select * from %s' %tbl
-    #     df = pd.read_sql(sql, con=conn)
-    #     return df
 
     update(table_name)
     conn = connect()
@@ -260,7 +242,6 @@ def buildCoinData():
     )
 
     return encode_utf8(html)
-    #return render_template('coins.html')
 
 if __name__ == '__main__':
     app.run()
