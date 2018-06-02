@@ -173,75 +173,78 @@ def buildTimingScenarios():
     )
     return encode_utf8(html)
 
-@app.route('/coins')
-def buildCoinData():
-    #------initial data dump is done once------
-    #for coin in coins:
-        #getInitialOneYearDataDump(coin)
-    #-------------------------------------------
-
-    def getCurrentDetails(coin):
-        url = 'https://api.coinmarketcap.com/v1/ticker/%s/' % coin
-        r = requests.get(url)
-        return r.json()
-
-    conn = None
-    page_components = []
-    current_objects = []
-    # for coin in coins:
-    #     update(coin)
-    for idx, coin in enumerate(coins):
-        update(coin)
-        if idx == 0:
-            conn = connect()
-        df = readSQL(coin, conn)
-        ds = ColumnDataSource(df)
-        if idx == len(coins) - 1:
-            disconnect(conn)
-
-        title = coin
-        fig = figure(plot_width=600,
-                     plot_height=300,
-                     x_axis_label="Date",
-                     y_axis_label="Closing Price",
-                     x_axis_type="datetime",
-                     title=title)
-        fig.xaxis[0].ticker.desired_num_ticks = 10
-
-        fig.line(ds.data['date'], ds.data['close'], name=coin)
-
-        # volume returns ???
-        # fig.add_tools(HoverTool(tooltips=[("date", "@x{%F}"), ("close", "@y{0.00}"), ("volume", "@volume")],
-        #                         formatters={"x": "datetime"}, names=[coin]))
-
-        fig.add_tools(HoverTool(tooltips=[("date", "@x{%F}"), ("close", "@y{0.00}")],
-                                formatters={"x": "datetime"}, names=[coin]))
-
-        script, div = components(fig)
-        page_components.append((script, div))
-        current_objects.append(getCurrentDetails(coin))
-
-    js_resources = INLINE.render_js()
-    css_resources = INLINE.render_css()
-
-
-
-    html = render_template(
-        'coins.html',
-        plot_script0=page_components[0][0],
-        plot_div0=page_components[0][1],
-        plot_script1=page_components[1][0],
-        plot_div1=page_components[1][1],
-        plot_script2=page_components[2][0],
-        plot_div2=page_components[2][1],
-        plot_script3=page_components[3][0],
-        plot_div3=page_components[3][1],
-        current=current_objects,
-        js_resources=js_resources,
-        css_resources=css_resources
-    )
-
-    return encode_utf8(html)
+# Commented out due to error because of the change in the api:
+#sqlalchemy.exc.ProgrammingError: (psycopg2.ProgrammingError) column "open*" of relation "burst" does not exist
+#LINE 1: INSERT INTO burst (date, "open*", high, low, "close**", volu...
+# @app.route('/coins')
+# def buildCoinData():
+#     #------initial data dump is done once------
+#     #for coin in coins:
+#         #getInitialOneYearDataDump(coin)
+#     #-------------------------------------------
+#
+#     def getCurrentDetails(coin):
+#         url = 'https://api.coinmarketcap.com/v1/ticker/%s/' % coin
+#         r = requests.get(url)
+#         return r.json()
+#
+#     conn = None
+#     page_components = []
+#     current_objects = []
+#     # for coin in coins:
+#     #     update(coin)
+#     for idx, coin in enumerate(coins):
+#         update(coin)
+#         if idx == 0:
+#             conn = connect()
+#         df = readSQL(coin, conn)
+#         ds = ColumnDataSource(df)
+#         if idx == len(coins) - 1:
+#             disconnect(conn)
+#
+#         title = coin
+#         fig = figure(plot_width=600,
+#                      plot_height=300,
+#                      x_axis_label="Date",
+#                      y_axis_label="Closing Price",
+#                      x_axis_type="datetime",
+#                      title=title)
+#         fig.xaxis[0].ticker.desired_num_ticks = 10
+#
+#         fig.line(ds.data['date'], ds.data['close'], name=coin)
+#
+#         # volume returns ???
+#         # fig.add_tools(HoverTool(tooltips=[("date", "@x{%F}"), ("close", "@y{0.00}"), ("volume", "@volume")],
+#         #                         formatters={"x": "datetime"}, names=[coin]))
+#
+#         fig.add_tools(HoverTool(tooltips=[("date", "@x{%F}"), ("close", "@y{0.00}")],
+#                                 formatters={"x": "datetime"}, names=[coin]))
+#
+#         script, div = components(fig)
+#         page_components.append((script, div))
+#         current_objects.append(getCurrentDetails(coin))
+#
+#     js_resources = INLINE.render_js()
+#     css_resources = INLINE.render_css()
+#
+#
+#
+#     html = render_template(
+#         'coins.html',
+#         plot_script0=page_components[0][0],
+#         plot_div0=page_components[0][1],
+#         plot_script1=page_components[1][0],
+#         plot_div1=page_components[1][1],
+#         plot_script2=page_components[2][0],
+#         plot_div2=page_components[2][1],
+#         plot_script3=page_components[3][0],
+#         plot_div3=page_components[3][1],
+#         current=current_objects,
+#         js_resources=js_resources,
+#         css_resources=css_resources
+#     )
+#
+#     return encode_utf8(html)
 
 if __name__ == '__main__':
     app.run()
