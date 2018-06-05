@@ -16,6 +16,10 @@
       .container-small, .container-large {
         max-width: 100%;
       }
+      .too-long {
+         position: absolute;
+         overflow-y: scroll;
+      }
     </style>
   </head>
   <body>
@@ -39,7 +43,7 @@
             {% endif %}
             </div>
         </div>
-        <div class="col-sm-4 col-sm-pull-8">
+        <div class="col-sm-4 col-sm-pull-8 too-long">
           <h5>Past data:</h5>
             <p>There have been {{ length }} days since {{ start }} when S&P500 value dropped below 10% of its last peak</p>
             {{data | safe}}
