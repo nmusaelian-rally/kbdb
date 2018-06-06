@@ -3,12 +3,31 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <title>Yield delta 10Y and 3M Treasurys</title>
     {{ js_resources|indent(4)|safe }}
     {{ css_resources|indent(4)|safe }}
     {{ plot_script|indent(4)|safe }}
+    <style>
+      /* to avoid 100% default width of table's container */
+      .table-nonfluid {
+        width: auto !important;
+      }
+      .container-small, .container-large {
+        max-width: 100%;
+      }
+      /* get rid of bullets */
+      li{
+          list-style-type:none;
+      }
+      .active{
+         background-color: black;
+         color: red;
+      }
+    </style>
   </head>
   <body>
+    {% include 'includes/_navbar.html' %}
     {{ plot_div|indent(4)|safe }}
   </body>
 </html>
