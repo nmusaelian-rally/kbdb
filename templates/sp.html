@@ -57,7 +57,10 @@
         <div class="col-sm-4 col-sm-pull-8 too-long">
 
           <h5>Past data:</h5>
-            <p>There have been {{ length }} days since {{ start }} when S&P500 value dropped below 10% of its last peak</p>
+            <p>There have been {{ length }} times since {{ start }} when S&P500 value dropped below 10% in a single day
+              from its respective last peak.<br />
+              The worst day was {{ worst_day['date'] }} when {{ worst_day['% down'] }}% was lost from
+              its last peak of {{ worst_day['from peak'] }}.</p>
             {{data | safe}}
           </div>
         </div>
