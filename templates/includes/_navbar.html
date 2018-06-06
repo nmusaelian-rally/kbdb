@@ -2,16 +2,16 @@
       <div class="collapse navbar navbar-collapse">
         <ul id="mynav-ul" class="navbar-nav">
           <li {% if request.path == "/" %}class="active"{% endif %}>
-             <a href="/">Home</a>
+             <a class="btn" href="/">Home</a>
           </li>
           <li {% if request.path == '/sp' %}class="active"{% endif %}>
-             <a href="/about">S&P500</a>
+             <a class="btn" href="/sp">S&P500</a>
           </li>
           <li {% if request.path == '/yield' %}class="active"{% endif %}>
-             <a href="/yield">T Yield</a>
+             <a class="btn" href="/yield">T Yield</a>
           </li>
           <li {% if request.path == '/scenarios' %}class="active"{% endif %}>
-             <a href="/scenarios">Scenarios</a>
+             <a class="btn" href="/scenarios">Scenarios</a>
           </li>
         </ul>
       </div>
