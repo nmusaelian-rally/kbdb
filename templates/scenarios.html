@@ -13,9 +13,17 @@
       .container-small, .container-large {
         max-width: 100%;
       }
+      /* get rid of bullets */
+      li{
+          list-style-type:none;
+      }
+      .active{
+         background-color: #dcdcdc;
+      }
     </style>
   </head>
   <body>
+    {% include 'includes/_navbar.html' %}
     <div class="container-fluid">
       <div class="row">
         <div class="col-sm-2">

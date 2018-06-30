@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 import psycopg2
 from bokeh.embed import components
@@ -62,6 +62,13 @@ def buildSP500Chart():
     lows, last_record = getLows(sp)
     disconnect(conn)
 
+    worst_row = lows.loc[lows['% down'] == lows['% down'].max()]
+    worst_day = {}
+    worst_day['date']      = lows.index[lows['% down'] == lows['% down'].max()].tolist()[0].strftime('%Y-%m-%d')
+    worst_day['value']     = worst_row['value'].values[0]
+    worst_day['% down']    = worst_row['% down'].values[0]
+    worst_day['from peak'] = worst_row['from peak'].values[0]
+
     ds = ColumnDataSource(sp)
 
     start = '2007-09-28'
@@ -95,14 +102,15 @@ def buildSP500Chart():
 
     html = render_template(
         'sp.html',
-        data = lows_html,
-        length = lows.shape[0],
-        start  = start,
+        data      = lows_html,
+        worst_day = worst_day,
+        length    = lows.shape[0],
+        start     = start,
         last_record = last_record,
-        plot_script=script,
-        plot_div=div,
-        js_resources=js_resources,
-        css_resources=css_resources,
+        plot_script = script,
+        plot_div    = div,
+        js_resources  = js_resources,
+        css_resources = css_resources,
     )
     return encode_utf8(html)
 
